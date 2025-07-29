@@ -1,13 +1,9 @@
-import type Broker from '../connections/broker';
-import type Redis from '../connections/redis';
+import type Broker from '../connections/broker/index.js';
+import type { IMongoInstance } from '../connections/mongo/types.js';
+import type Bootstrap from '../tools/bootstrap.js';
 
 export interface IState {
+  mongo: IMongoInstance;
   broker: Broker;
-  redis: Redis;
-}
-
-export interface IConfigInterface {
-  amqpURI: string;
-  redisURI: string;
-  mongoURI: string;
+  controllers: Bootstrap;
 }

@@ -1,5 +1,4 @@
 # Logs
-logs
 *.log
 npm-debug.log*
 
@@ -26,12 +25,11 @@ yarn.lock
 # Optional eslint cache
 .eslintcache
 
+# Typescript cache
+tsconfig.tsbuildinfo
+
 # Misc
 .DS_Store
-dist/
-/dist
-dist
-package-lock.json
 
 /img/**/*
 img/*
@@ -42,13 +40,8 @@ img/
 /.pnp
 .pnp.js
 
-# testing
-/coverage
-
-# production
-/build
-
 # misc
+.env
 .env.local
 .env.development.local
 .env.test.local

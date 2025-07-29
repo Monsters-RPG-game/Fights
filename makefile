@@ -1,5 +1,6 @@
 clean:
-	rm -rf ./build/
+	rm -rf ./build \
+	rm tsconfig.tsbuildinfo
 
 test:
 	clear \

@@ -1,5 +1,15 @@
 {
-  "amqpURI": "rabbitUrl",
-  "redisURI": "redisUrl",
-  "mongoURI": "mongodb://user:password@localhost:27017/Users"
+  "mongo": {
+    "url": "mongodb://user:password@mongodb:27017",
+    "db": "users",
+    "testDb": "users-test"
+  },
+  "amqp": {
+    "url": "amqp://user:password@address:port",
+    "myQueue": "myQueue",
+    "gatewayQueue": "gatewayQueue",
+    "myService": "me",
+    "gatewayService": "gateway"
+  },
+  "repository": "mongo"
 }
