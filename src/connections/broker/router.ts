@@ -1,48 +1,38 @@
-import * as enums from '../../enums';
-import * as errors from '../../errors';
-import FightsController from '../../modules/fights/handler';
-import Log from '../../tools/logger';
-import type * as types from '../../types';
+import Log from 'simpl-loggar';
+import Handler from './handler.js';
+import * as enums from '../../enums/index.js';
+import * as errors from '../../errors/index.js';
+import type * as types from '../../types/index.js';
 
 export default class Router {
-  private readonly _fights: FightsController;
+  private readonly _handler: Handler;
 
   constructor() {
-    this._fights = new FightsController();
+    this._handler = new Handler();
   }
 
-  private get fights(): FightsController {
-    return this._fights;
+  private get handler(): Handler {
+    return this._handler;
   }
 
   async handleMessage(payload: types.IRabbitMessage): Promise<void> {
-    Log.log('Server', 'Got new message');
-    Log.log('Server', JSON.stringify(payload));
+    this.logNewMessage(payload);
 
     switch (payload.target) {
-      case enums.EMessageTargets.Fight:
-        return this.fightsMessage(payload);
+      case enums.EMessageTargets.Sample:
+        return this.handler.sampleMessage(payload);
       default:
         throw new errors.IncorrectTargetError();
     }
   }
 
-  private async fightsMessage(payload: types.IRabbitMessage): Promise<void> {
-    switch (payload.subTarget) {
-      case enums.EFightsTargets.Attack:
-        return this.fights.attack(payload.payload, payload.user);
-      case enums.EFightsTargets.CreateFight:
-        return this.fights.createFight(payload.payload, payload.user);
-      case enums.EFightsTargets.Leave:
-        return this.fights.leave(payload.payload, payload.user);
-      case enums.EFightsTargets.GetFights:
-        return this.fights.getFights(payload.payload, payload.user);
-      case enums.EFightsTargets.UseSkill:
-        return this.fights.useSkill(payload.payload, payload.user);
-      case enums.EFightsTargets.GetLogs:
-        return this.fights.getLogs(payload.payload, payload.user);
-      default:
-        throw new errors.IncorrectTargetError();
+  private logNewMessage(message: types.IRabbitMessage): void {
+    const toLog = { ...structuredClone(message) };
+
+    if ((toLog.payload as Record<string, string>)?.password) {
+      (toLog.payload as Record<string, string>).password = '***';
     }
+
+    Log.debug('Rabbit', 'Got new message', toLog);
   }
 }

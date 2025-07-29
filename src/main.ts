@@ -1,10 +1,10 @@
-import Broker from './connections/broker';
-import Mongo from './connections/mongo';
-import Redis from './connections/redis';
-import Liveness from './tools/liveness';
-import Log from './tools/logger';
-import State from './tools/state';
-import type { IFullError } from './types';
+import Log from 'simpl-loggar';
+import Broker from './connections/broker/index.js';
+import Mongo from './connections/mongo/factory.js';
+import Bootstrap from './tools/bootstrap.js';
+import Liveness from './tools/liveness.js';
+import State from './tools/state.js';
+import type { IFullError } from './types/index.js';
 
 class App {
   private _liveness: Liveness | undefined;
@@ -13,41 +13,59 @@ class App {
     return this._liveness;
   }
 
-  private set liveness(value: Liveness | undefined) {
-    this._liveness = value;
+  private set liveness(val: Liveness | undefined) {
+    this._liveness = val;
   }
 
   init(): void {
-    this.start().catch((err) => {
-      const { stack, message } = err as IFullError;
-      Log.log('Server', 'Err while initializing app');
-      Log.log('Server', message, stack);
+    this.handleInit().catch((err) => {
+      const { stack, message } = err as IFullError | Error;
+      Log.error('Server', 'Err while initializing app', message, stack);
 
-      return this.kill();
+      this.close();
     });
   }
 
-  kill(): void {
-    State.broker.close();
-    State.redis.close().catch((err) => {
-      Log.error('Redis', 'Could not kill redis', (err as Error).message, (err as Error).stack);
-    });
+  private close(): void {
+    State.kill();
 
-    Log.log('Server', 'Server closed');
+    this.liveness?.close();
   }
 
-  private async start(): Promise<void> {
-    const mongo = new Mongo();
-    State.broker = new Broker();
-    State.redis = new Redis();
+  private configLogger(): void {
+    Log.setPrefix('monsters');
+  }
 
-    State.broker.init();
-    await mongo.init();
-    await State.redis.init();
+  @Log.decorateTime('App init')
+  private async handleInit(): Promise<void> {
+    this.configLogger();
+
+    const controllers = new Bootstrap();
+    const broker = new Broker();
+
+    State.broker = broker;
+    State.controllers = controllers;
+
+    State.controllers.init();
+    State.mongo = await Mongo.create();
+    await broker.init();
+
     Log.log('Server', 'Server started');
 
     this.liveness = new Liveness();
     this.liveness.init();
+    this.listenForSignals();
+  }
+
+  private listenForSignals(): void {
+    process.on('SIGTERM', () => {
+      Log.log('Server', 'Received signal SIGTERM. Gracefully closing');
+      this.close();
+    });
+    process.on('SIGINT', () => {
+      Log.log('Server', 'Received signal SIGINT. Gracefully closing');
+      this.close();
+    });
   }
 }
 
