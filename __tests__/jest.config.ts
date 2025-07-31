@@ -3,7 +3,7 @@ import type { Config } from 'jest';
 
 const config: Config = {
   ...defaultConfig,
-  roots: ['./'],
+  roots: ['./__tests__'],
 };
 
 export default config;
