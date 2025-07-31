@@ -17,10 +17,11 @@
     "lint": "cross-env NODE_ENV=development eslint -c eslint.config.mjs . --fix",
     "listErrors": "node_modules/.bin/tsc --skipLibCheck",
     "lintStaged": "npx lint-staged",
+    "verifyConfig": "tsx src/tools/config/verify.ts",
     "test": "echo 'If you want to run all the tests, please use makefile'",
-    "test:e2e": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --runInBand --config __tests__/jest.config.e2e.ts",
-    "test:unit": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --config __tests__/jest.config.unit.ts",
-    "test:db": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --runInBand --config __tests__/jest.config.db.ts"
+    "test:e2e": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --runInBand --config  __tests__/jest.config.e2e.ts",
+    "test:db": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --runInBand --config __tests__/jest.config.db.ts",
+    "test:unit": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --config __tests__/jest.config.unit.ts"
   },
   "dependencies": {
     "@monsters/validator": "github:Monsters-RPG-game/Packages-validator",

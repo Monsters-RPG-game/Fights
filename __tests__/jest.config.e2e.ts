@@ -1,10 +1,10 @@
+import type { JestConfigWithTsJest } from 'ts-jest';
 import defaultConfig from './jest.config.default';
-import type { Config } from 'jest';
 
-const config: Config = {
+const config: JestConfigWithTsJest = {
   ...defaultConfig,
-  roots: ['./e2e'],
-  setupFilesAfterEnv: ['./utils/setup.ts'],
+  roots: ['./__tests__/e2e'],
+  setupFilesAfterEnv: ['./__tests__/utils/setup.ts'],
 };
 
 export default config;
